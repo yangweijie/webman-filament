@@ -1,0 +1,487 @@
+<?php
+
+/**
+ * 数据库配置文件
+ * 
+ * 由 Webman Filament 配置生成器自动生成
+ * 生成时间: {{TIMESTAMP}}
+ */
+
+return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | 默认数据库连接
+    |--------------------------------------------------------------------------
+    */
+
+    'default' => env('DB_CONNECTION', '{{DEFAULT_CONNECTION}}'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | 数据库连接配置
+    |--------------------------------------------------------------------------
+    */
+
+    'connections' => [
+
+        /*
+        |--------------------------------------------------------------------------
+        | MySQL 数据库连接
+        |--------------------------------------------------------------------------
+        */
+
+        'mysql' => [
+            'driver' => 'mysql',
+            'host' => env('DB_HOST', '{{MYSQL_HOST}}'),
+            'port' => env('DB_PORT', '{{MYSQL_PORT}}'),
+            'database' => env('DB_DATABASE', '{{MYSQL_DATABASE}}'),
+            'username' => env('DB_USERNAME', '{{MYSQL_USERNAME}}'),
+            'password' => env('DB_PASSWORD', '{{MYSQL_PASSWORD}}'),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            ]) : [],
+            'pool' => [
+                'min_connections' => 1,
+                'max_connections' => 10,
+                'acquire_timeout' => 60,
+                'idle_timeout' => 60,
+                'wait_timeout' => 3,
+            ],
+        ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | PostgreSQL 数据库连接
+        |--------------------------------------------------------------------------
+        */
+
+        'pgsql' => [
+            'driver' => 'pgsql',
+            'host' => env('DB_HOST', '{{PGSQL_HOST}}'),
+            'port' => env('DB_PORT', '{{PGSQL_PORT}}'),
+            'database' => env('DB_DATABASE', '{{PGSQL_DATABASE}}'),
+            'username' => env('DB_USERNAME', '{{PGSQL_USERNAME}}'),
+            'password' => env('DB_PASSWORD', '{{PGSQL_PASSWORD}}'),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'schema' => 'public',
+            'sslmode' => 'prefer',
+            'options' => extension_loaded('pdo_pgsql') ? array_filter([
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            ]) : [],
+            'pool' => [
+                'min_connections' => 1,
+                'max_connections' => 10,
+                'acquire_timeout' => 60,
+                'idle_timeout' => 60,
+                'wait_timeout' => 3,
+            ],
+        ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | SQLite 数据库连接
+        |--------------------------------------------------------------------------
+        */
+
+        'sqlite' => [
+            'driver' => 'sqlite',
+            'database' => env('DB_DATABASE', '{{SQLITE_DATABASE}}'),
+            'prefix' => '',
+            'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
+            'options' => extension_loaded('pdo_sqlite') ? array_filter([
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            ]) : [],
+        ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | SQL Server 数据库连接
+        |--------------------------------------------------------------------------
+        */
+
+        'sqlsrv' => [
+            'driver' => 'sqlsrv',
+            'host' => env('DB_HOST', 'localhost'),
+            'port' => env('DB_PORT', '1433'),
+            'database' => env('DB_DATABASE', 'forge'),
+            'username' => env('DB_USERNAME', 'forge'),
+            'password' => env('DB_PASSWORD', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'options' => extension_loaded('pdo_sqlsrv') ? array_filter([
+                PDO::SQLSRV_ATTR_ENCODING => PDO::SQLSRV_ENCODING_UTF8,
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            ]) : [],
+            'pool' => [
+                'min_connections' => 1,
+                'max_connections' => 10,
+                'acquire_timeout' => 60,
+                'idle_timeout' => 60,
+                'wait_timeout' => 3,
+            ],
+        ],
+
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | 迁移配置
+    |--------------------------------------------------------------------------
+    */
+
+    'migrations' => [
+        'table' => 'migrations',
+        'path' => database_path('migrations'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Redis 配置
+    |--------------------------------------------------------------------------
+    */
+
+    'redis' => [
+
+        'cluster' => false,
+
+        'default' => [
+            'host' => env('REDIS_HOST', '{{REDIS_HOST}}'),
+            'password' => env('REDIS_PASSWORD', '{{REDIS_PASSWORD}}'),
+            'port' => env('REDIS_PORT', {{REDIS_PORT}}),
+            'database' => env('REDIS_DB', {{REDIS_DATABASE}}),
+            'timeout' => 5.0,
+        ],
+
+        'cache' => [
+            'host' => env('REDIS_HOST', '{{REDIS_HOST}}'),
+            'password' => env('REDIS_PASSWORD', '{{REDIS_PASSWORD}}'),
+            'port' => env('REDIS_PORT', {{REDIS_PORT}}),
+            'database' => env('REDIS_CACHE_DB', 1),
+            'timeout' => 5.0,
+        ],
+
+        'queue' => [
+            'host' => env('REDIS_HOST', '{{REDIS_HOST}}'),
+            'password' => env('REDIS_PASSWORD', '{{REDIS_PASSWORD}}'),
+            'port' => env('REDIS_PORT', {{REDIS_PORT}}),
+            'database' => env('REDIS_QUEUE_DB', 2),
+            'timeout' => 5.0,
+        ],
+
+        'session' => [
+            'host' => env('REDIS_HOST', '{{REDIS_HOST}}'),
+            'password' => env('REDIS_PASSWORD', '{{REDIS_PASSWORD}}'),
+            'port' => env('REDIS_PORT', {{REDIS_PORT}}),
+            'database' => env('REDIS_SESSION_DB', 3),
+            'timeout' => 5.0,
+        ],
+
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | 缓存配置
+    |--------------------------------------------------------------------------
+    */
+
+    'cache' => [
+        'prefix' => env('CACHE_PREFIX', 'webman_cache'),
+        'ttl' => 3600,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | 会话配置
+    |--------------------------------------------------------------------------
+    */
+
+    'session' => [
+        'table' => 'sessions',
+        'connection' => null,
+        'lifetime' => env('SESSION_LIFETIME', 120),
+        'expire_on_close' => false,
+        'encrypt' => false,
+        'files' => storage_path('framework/sessions'),
+        'connection' => null,
+        'store' => null,
+        'lottery' => [2, 100],
+        'cookie' => 'webman_session',
+        'path' => '/',
+        'domain' => env('SESSION_DOMAIN'),
+        'secure' => env('SESSION_SECURE_COOKIE'),
+        'http_only' => true,
+        'same_site' => 'lax',
+        'partitioned' => false,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | 队列配置
+    |--------------------------------------------------------------------------
+    */
+
+    'queue' => [
+        'default' => env('QUEUE_CONNECTION', 'sync'),
+        'connections' => [
+            'sync' => [
+                'driver' => 'sync',
+            ],
+            'database' => [
+                'driver' => 'database',
+                'table' => 'jobs',
+                'queue' => 'default',
+                'retry_after' => 90,
+            ],
+            'beanstalkd' => [
+                'driver' => 'beanstalkd',
+                'host' => 'localhost',
+                'queue' => 'default',
+                'retry_after' => 90,
+                'block_for' => 0,
+            ],
+            'sqs' => [
+                'driver' => 'sqs',
+                'key' => env('AWS_ACCESS_KEY_ID'),
+                'secret' => env('AWS_SECRET_ACCESS_KEY'),
+                'prefix' => env('SQS_PREFIX', 'https://sqs.us-east-1.amazonaws.com/your-account-id'),
+                'queue' => env('SQS_QUEUE', 'default'),
+                'suffix' => env('SQS_SUFFIX'),
+                'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
+            ],
+            'redis' => [
+                'driver' => 'redis',
+                'connection' => 'default',
+                'queue' => env('REDIS_QUEUE', 'default'),
+                'retry_after' => 90,
+                'block_for' => null,
+            ],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | 广播配置
+    |--------------------------------------------------------------------------
+    */
+
+    'broadcast' => [
+        'default' => env('BROADCAST_DRIVER', 'null'),
+        'connections' => [
+            'pusher' => [
+                'driver' => 'pusher',
+                'key' => env('PUSHER_APP_KEY'),
+                'secret' => env('PUSHER_APP_SECRET'),
+                'app_id' => env('PUSHER_APP_ID'),
+                'options' => [
+                    'cluster' => env('PUSHER_APP_CLUSTER'),
+                    'useTLS' => true,
+                ],
+            ],
+            'ably' => [
+                'driver' => 'ably',
+                'key' => env('ABLY_KEY'),
+            ],
+            'redis' => [
+                'driver' => 'redis',
+                'connection' => 'default',
+            ],
+            'log' => [
+                'driver' => 'log',
+            ],
+            'null' => [
+                'driver' => 'null',
+            ],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | 文件存储配置
+    |--------------------------------------------------------------------------
+    */
+
+    'filesystems' => [
+        'default' => env('FILESYSTEM_DISK', 'local'),
+        'disks' => [
+            'local' => [
+                'driver' => 'local',
+                'root' => storage_path('app'),
+                'throw' => false,
+            ],
+            'public' => [
+                'driver' => 'local',
+                'root' => storage_path('app/public'),
+                'url' => env('APP_URL').'/storage',
+                'visibility' => 'public',
+                'throw' => false,
+            ],
+            's3' => [
+                'driver' => 's3',
+                'key' => env('AWS_ACCESS_KEY_ID'),
+                'secret' => env('AWS_SECRET_ACCESS_KEY'),
+                'region' => env('AWS_DEFAULT_REGION'),
+                'bucket' => env('AWS_BUCKET'),
+                'url' => env('AWS_URL'),
+                'endpoint' => env('AWS_ENDPOINT'),
+                'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+                'throw' => false,
+            ],
+        ],
+        'links' => [
+            public_path('storage') => storage_path('app/public'),
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | 邮件配置
+    |--------------------------------------------------------------------------
+    */
+
+    'mail' => [
+        'default' => env('MAIL_MAILER', 'smtp'),
+        'mailers' => [
+            'smtp' => [
+                'transport' => 'smtp',
+                'host' => env('MAIL_HOST', 'smtp.mailgun.org'),
+                'port' => env('MAIL_PORT', 587),
+                'encryption' => env('MAIL_ENCRYPTION', 'tls'),
+                'username' => env('MAIL_USERNAME'),
+                'password' => env('MAIL_PASSWORD'),
+                'timeout' => null,
+                'local_domain' => env('MAIL_EHLO_DOMAIN'),
+            ],
+            'ses' => [
+                'transport' => 'ses',
+            ],
+            'mailgun' => [
+                'transport' => 'mailgun',
+            ],
+            'postmark' => [
+                'transport' => 'postmark',
+            ],
+            'sendmail' => [
+                'transport' => 'sendmail',
+                'path' => env('MAIL_SENDMAIL_PATH', '/usr/sbin/sendmail -bs -i'),
+            ],
+            'log' => [
+                'transport' => 'log',
+                'channel' => env('MAIL_LOG_CHANNEL'),
+            ],
+            'array' => [
+                'transport' => 'array',
+            ],
+            'failover' => [
+                'transport' => 'failover',
+                'mailers' => [
+                    'smtp',
+                    'log',
+                ],
+            ],
+        ],
+        'from' => [
+            'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
+            'name' => env('MAIL_FROM_NAME', 'Example'),
+        ],
+        'markdown' => [
+            'theme' => 'default',
+            'paths' => [
+                resource_path('views/vendor/mail'),
+            ],
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | 日志配置
+    |--------------------------------------------------------------------------
+    */
+
+    'logging' => [
+        'default' => env('LOG_CHANNEL', 'daily'),
+        'deprecations' => [
+            'channel' => env('LOG_DEPRECATIONS_CHANNEL', 'null'),
+            'trace' => false,
+        ],
+        'channels' => [
+            'stack' => [
+                'driver' => 'stack',
+                'channels' => ['single'],
+                'ignore_exceptions' => false,
+            ],
+            'single' => [
+                'driver' => 'single',
+                'path' => storage_path('logs/laravel.log'),
+                'level' => env('LOG_LEVEL', 'debug'),
+                'replace_placeholders' => true,
+            ],
+            'daily' => [
+                'driver' => 'daily',
+                'path' => storage_path('logs/laravel.log'),
+                'level' => env('LOG_LEVEL', 'debug'),
+                'days' => 14,
+                'replace_placeholders' => true,
+            ],
+            'slack' => [
+                'driver' => 'slack',
+                'url' => env('LOG_SLACK_WEBHOOK_URL'),
+                'username' => 'Laravel Log',
+                'emoji' => ':boom:',
+                'level' => env('LOG_LEVEL', 'critical'),
+                'replace_placeholders' => true,
+            ],
+            'papertrail' => [
+                'driver' => 'monolog',
+                'level' => env('LOG_LEVEL', 'debug'),
+                'handler' => 'syslogUdpHandler',
+                'handler_with' => [
+                    'host' => env('PAPERTRAIL_HANDLER_HOST'),
+                    'port' => env('PAPERTRAIL_HANDLER_PORT'),
+                    'connectionString' => 'tls://'.env('PAPERTRAIL_HANDLER_HOST').':'.env('PAPERTRAIL_HANDLER_PORT'),
+                ],
+                'processors' => [
+                    \Monolog\Processor\PsrLogMessageProcessor::class,
+                ],
+            ],
+            'stderr' => [
+                'driver' => 'monolog',
+                'level' => env('LOG_LEVEL', 'debug'),
+                'handler' => 'StreamHandler',
+                'formatter' => env('LOG_STDERR_FORMATTER'),
+                'with' => [
+                    'stream' => 'php://stderr',
+                ],
+                'processors' => [
+                    \Monolog\Processor\PsrLogMessageProcessor::class,
+                ],
+            ],
+            'syslog' => [
+                'driver' => 'syslog',
+                'level' => env('LOG_LEVEL', 'debug'),
+                'facility' => LOG_USER,
+                'replace_placeholders' => true,
+            ],
+            'errorlog' => [
+                'driver' => 'errorlog',
+                'level' => env('LOG_LEVEL', 'debug'),
+                'replace_placeholders' => true,
+            ],
+            'null' => [
+                'driver' => 'monolog',
+                'handler' => 'NullHandler',
+            ],
+            'emergency' => [
+                'path' => storage_path('logs/laravel.log'),
+            ],
+        ],
+    ],
+
+];

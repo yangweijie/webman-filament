@@ -1,0 +1,449 @@
+# 生产环境 Docker Compose 配置
+version: '3.8'
+
+services:
+  # 负载均衡器
+  load-balancer:
+    image: nginx:alpine
+    container_name: webman-filament-lb
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./examples/nginx/nginx-lb.conf:/etc/nginx/nginx.conf
+      - ./examples/nginx/conf.d:/etc/nginx/conf.d
+      - ./ssl:/etc/nginx/ssl
+      - ./logs/nginx:/var/log/nginx
+    depends_on:
+      - app-1
+      - app-2
+      - app-3
+    networks:
+      - webman-network
+
+  # 应用实例 1
+  app-1:
+    build:
+      context: .
+      dockerfile: examples/docker/Dockerfile
+    container_name: webman-filament-app-1
+    restart: unless-stopped
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - DB_HOST=database
+      - DB_DATABASE=webman_filament
+      - DB_USERNAME=webman
+      - DB_PASSWORD=secure_password
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=redis_password
+      - INSTANCE_ID=1
+    depends_on:
+      - database
+      - redis
+    networks:
+      - webman-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # 应用实例 2
+  app-2:
+    build:
+      context: .
+      dockerfile: examples/docker/Dockerfile
+    container_name: webman-filament-app-2
+    restart: unless-stopped
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - DB_HOST=database
+      - DB_DATABASE=webman_filament
+      - DB_USERNAME=webman
+      - DB_PASSWORD=secure_password
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=redis_password
+      - INSTANCE_ID=2
+    depends_on:
+      - database
+      - redis
+    networks:
+      - webman-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # 应用实例 3
+  app-3:
+    build:
+      context: .
+      dockerfile: examples/docker/Dockerfile
+    container_name: webman-filament-app-3
+    restart: unless-stopped
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - DB_HOST=database
+      - DB_DATABASE=webman_filament
+      - DB_USERNAME=webman
+      - DB_PASSWORD=secure_password
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=redis_password
+      - INSTANCE_ID=3
+    depends_on:
+      - database
+      - redis
+    networks:
+      - webman-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # 数据库主服务器
+  database-master:
+    image: mysql:8.0
+    container_name: webman-filament-db-master
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: webman_filament
+      MYSQL_USER: webman
+      MYSQL_PASSWORD: secure_password
+      MYSQL_REPLICATION_USER: replicator
+      MYSQL_REPLICATION_PASSWORD: replicator_password
+    volumes:
+      - mysql_master_data:/var/lib/mysql
+      - ./examples/docker/mysql/master.cnf:/etc/mysql/conf.d/master.cnf
+    command: --server-id=1 --log-bin=mysql-bin --binlog-format=ROW
+    networks:
+      - webman-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
+
+  # 数据库从服务器
+  database-slave:
+    image: mysql:8.0
+    container_name: webman-filament-db-slave
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: webman_filament
+      MYSQL_USER: webman
+      MYSQL_PASSWORD: secure_password
+    volumes:
+      - mysql_slave_data:/var/lib/mysql
+      - ./examples/docker/mysql/slave.cnf:/etc/mysql/conf.d/slave.cnf
+    command: --server-id=2 --log-bin=mysql-bin --binlog-format=ROW
+    networks:
+      - webman-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
+
+  # Redis 集群
+  redis-1:
+    image: redis:7-alpine
+    container_name: webman-filament-redis-1
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass redis_password --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    volumes:
+      - redis_1_data:/data
+    ports:
+      - "7000:7000"
+      - "17000:17000"
+    networks:
+      - webman-network
+
+  redis-2:
+    image: redis:7-alpine
+    container_name: webman-filament-redis-2
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass redis_password --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    volumes:
+      - redis_2_data:/data
+    ports:
+      - "7001:7000"
+      - "17001:17000"
+    networks:
+      - webman-network
+
+  redis-3:
+    image: redis:7-alpine
+    container_name: webman-filament-redis-3
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass redis_password --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes
+    volumes:
+      - redis_3_data:/data
+    ports:
+      - "7002:7000"
+      - "17002:17000"
+    networks:
+      - webman-network
+
+  # 队列处理器
+  queue-1:
+    build:
+      context: .
+      dockerfile: examples/docker/Dockerfile
+    container_name: webman-filament-queue-1
+    restart: unless-stopped
+    command: php artisan queue:work --verbose --tries=3 --timeout=90 --queue=high,default,low
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - DB_HOST=database-master
+      - DB_DATABASE=webman_filament
+      - DB_USERNAME=webman
+      - DB_PASSWORD=secure_password
+      - REDIS_HOST=redis-1
+      - REDIS_PASSWORD=redis_password
+      - QUEUE_CONNECTION=redis
+    depends_on:
+      - database-master
+      - database-slave
+      - redis-1
+    networks:
+      - webman-network
+    deploy:
+      replicas: 2
+
+  queue-2:
+    build:
+      context: .
+      dockerfile: examples/docker/Dockerfile
+    container_name: webman-filament-queue-2
+    restart: unless-stopped
+    command: php artisan queue:work --verbose --tries=3 --timeout=90 --queue=emails,notifications
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - DB_HOST=database-master
+      - DB_DATABASE=webman_filament
+      - DB_USERNAME=webman
+      - DB_PASSWORD=secure_password
+      - REDIS_HOST=redis-1
+      - REDIS_PASSWORD=redis_password
+      - QUEUE_CONNECTION=redis
+    depends_on:
+      - database-master
+      - database-slave
+      - redis-1
+    networks:
+      - webman-network
+    deploy:
+      replicas: 1
+
+  # 调度器
+  scheduler:
+    build:
+      context: .
+      dockerfile: examples/docker/Dockerfile
+    container_name: webman-filament-scheduler
+    restart: unless-stopped
+    command: >
+      sh -c "
+        while [ true ]; do
+          php artisan schedule:run --verbose --no-interaction &
+          sleep 60
+        done
+      "
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - DB_HOST=database-master
+      - DB_DATABASE=webman_filament
+      - DB_USERNAME=webman
+      - DB_PASSWORD=secure_password
+      - REDIS_HOST=redis-1
+      - REDIS_PASSWORD=redis_password
+    depends_on:
+      - database-master
+      - database-slave
+      - redis-1
+    networks:
+      - webman-network
+
+  # 备份服务
+  backup:
+    build:
+      context: .
+      dockerfile: examples/docker/Dockerfile
+    container_name: webman-filament-backup
+    restart: unless-stopped
+    command: >
+      sh -c "
+        while [ true ]; do
+          mysqldump -h database-master -u webman -psecure_password webman_filament > /backup/db-$(date +%Y%m%d_%H%M%S).sql
+          tar -czf /backup/app-$(date +%Y%m%d_%H%M%S).tar.gz /var/www/html/storage
+          find /backup -name '*.sql' -mtime +7 -delete
+          find /backup -name '*.tar.gz' -mtime +7 -delete
+          sleep 86400
+        done
+      "
+    volumes:
+      - backup_data:/backup
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+    networks:
+      - webman-network
+
+  # 监控服务
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: webman-filament-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./examples/docker/monitoring/prometheus-production.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - webman-network
+
+  # Grafana 监控面板
+  grafana:
+    image: grafana/grafana:latest
+    container_name: webman-filament-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./examples/docker/monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./examples/docker/monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin_password
+      - GF_USERS_ALLOW_SIGN_UP=false
+    depends_on:
+      - prometheus
+    networks:
+      - webman-network
+
+  # 日志收集
+  filebeat:
+    image: elastic/filebeat:8.8.0
+    container_name: webman-filament-filebeat
+    restart: unless-stopped
+    user: root
+    volumes:
+      - ./examples/docker/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./storage/logs:/var/www/html/storage/logs:ro
+    environment:
+      - ELASTICSEARCH_HOST=elasticsearch:9200
+    networks:
+      - webman-network
+
+  logstash:
+    image: logstash:8.8.0
+    container_name: webman-filament-logstash
+    restart: unless-stopped
+    ports:
+      - "5044:5044"
+      - "9600:9600"
+    volumes:
+      - ./examples/docker/logstash/pipeline:/usr/share/logstash/pipeline
+      - ./examples/docker/logstash/config:/usr/share/logstash/config
+      - ./storage/logs:/var/www/html/storage/logs
+    environment:
+      - LS_JAVA_OPTS=-Xmx2g -Xms2g
+    depends_on:
+      - elasticsearch
+    networks:
+      - webman-network
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.8.0
+    container_name: webman-filament-elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms2g -Xmx2g
+      - xpack.security.enabled=false
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    networks:
+      - webman-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '1.0'
+          memory: 2G
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.8.0
+    container_name: webman-filament-kibana
+    restart: unless-stopped
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    networks:
+      - webman-network
+
+networks:
+  webman-network:
+    driver: bridge
+
+volumes:
+  mysql_master_data:
+    driver: local
+  mysql_slave_data:
+    driver: local
+  redis_1_data:
+    driver: local
+  redis_2_data:
+    driver: local
+  redis_3_data:
+    driver: local
+  backup_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  elasticsearch_data:
+    driver: local

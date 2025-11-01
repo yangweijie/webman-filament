@@ -1,0 +1,119 @@
+# 生产环境 Prometheus 配置
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'webman-filament'
+    environment: 'production'
+
+rule_files:
+  - "alert_rules.yml"
+  - "recording_rules.yml"
+
+scrape_configs:
+  # Prometheus 自身监控
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 30s
+
+  # Webman 应用监控（多实例）
+  - job_name: 'webman-filament-app'
+    static_configs:
+      - targets: 
+        - 'app-1:9000'
+        - 'app-2:9000' 
+        - 'app-3:9000'
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        regex: '([^:]+)(?::\d+)?'
+        replacement: '${1}'
+      - source_labels: [__meta_docker_container_label_com_docker_compose_service]
+        target_label: service
+
+  # Nginx 负载均衡器监控
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['load-balancer:80']
+    metrics_path: '/nginx_status'
+    scrape_interval: 15s
+
+  # MySQL 主从监控
+  - job_name: 'mysql'
+    static_configs:
+      - targets: 
+        - 'database-master:9104'
+        - 'database-slave:9104'
+    scrape_interval: 15s
+    relabel_configs:
+      - source_labels: [__meta_docker_container_label_com_docker_compose_service]
+        target_label: role
+        replacement: '${1}'
+
+  # Redis 集群监控
+  - job_name: 'redis'
+    static_configs:
+      - targets: 
+        - 'redis-1:9121'
+        - 'redis-2:9121'
+        - 'redis-3:9121'
+    scrape_interval: 15s
+
+  # 队列处理器监控
+  - job_name: 'queue'
+    static_configs:
+      - targets: 
+        - 'queue-1:9000'
+        - 'queue-2:9000'
+    scrape_interval: 30s
+
+  # 节点系统监控
+  - job_name: 'node'
+    static_configs:
+      - targets: ['localhost:9100']
+    scrape_interval: 15s
+
+  # 容器监控
+  - job_name: 'docker'
+    static_configs:
+      - targets: ['localhost:9323']
+    scrape_interval: 15s
+
+  # Blackbox 监控
+  - job_name: 'blackbox'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+        - http://localhost:80/health
+        - http://localhost:80/admin
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 127.0.0.1:9115
+
+# 告警配置
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+# 远程写入配置（可选）
+remote_write:
+  - url: "https://your-remote-storage/api/v1/write"
+    basic_auth:
+      username: "username"
+      password: "password"
+
+# 远程读取配置（可选）
+remote_read:
+  - url: "https://your-remote-storage/api/v1/read"
