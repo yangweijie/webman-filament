@@ -1,5 +1,5 @@
 {
-  "name": "webman-filament",
+  "name": "yangweijie/webman-filament",
   "description": "webman + Filament 集成扩展 - 基于适配器模式的常驻内存 Filament 后台面板",
   "keywords": [
     "webman",
