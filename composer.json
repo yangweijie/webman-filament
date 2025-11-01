@@ -1,157 +1,149 @@
 {
-    "name": "webman-filament/extension",
-    "description": "webman + Filament 集成扩展 - 基于适配器模式的常驻内存 Filament 后台面板",
-    "keywords": [
-        "webman",
-        "filament",
-        "admin",
-        "laravel",
-        "ui",
-        "sdui",
-        "bridge",
-        "adapter"
-    ],
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "webman-filament team",
-            "email": "team@webman-filament.com"
-        }
-    ],
-    "require": {
-        "php": "^8.1",
-        "workerman/webman-framework": "^1.5",
-        "filament/filament": "^4.0",
-        "illuminate/support": "^11.0",
-        "illuminate/container": "^11.0",
-        "illuminate/http": "^11.0",
-        "illuminate/routing": "^11.0",
-        "illuminate/database": "^11.0",
-        "illuminate/filesystem": "^11.0",
-        "illuminate/console": "^11.0",
-        "illuminate/auth": "^11.0",
-        "livewire/livewire": "^3.4",
-        "alpinejs/alpine": "^3.13",
-        "tailwindcss/tailwindcss": "^3.4"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^10.0",
-        "workerman/workerman": "^4.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "WebmanFilament\\": "src/",
-            "App\\": "src/",
-            "Database\\Migrations\\": "database/migrations/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "WebmanFilament\\Tests\\": "tests/"
-        }
-    },
-    "scripts": {
-        "test": "phpunit",
-        "test-coverage": "phpunit --coverage-html coverage",
-        
-        "install": "php scripts/install.php",
-        "install:force": "php scripts/install.php --force",
-        "install:verbose": "php scripts/install.php --verbose",
-        "install:dry-run": "php scripts/install.php --dry-run",
-        
-        "configure": "php scripts/configure.php",
-        "configure:interactive": "php scripts/configure.php --interactive",
-        "configure:database": "php scripts/configure.php --database",
-        "configure:admin": "php scripts/configure.php --admin",
-        "configure:theme": "php scripts/configure.php --theme",
-        "configure:reset": "php scripts/configure.php --reset",
-        
-        "validate": "php scripts/validate.php",
-        "validate:verbose": "php scripts/validate.php --verbose",
-        "validate:quick": "php scripts/validate.php --quick",
-        "validate:health": "php scripts/validate.php --health",
-        "validate:report": "php scripts/validate.php --report",
-        
-        "setup": [
-            "@install",
-            "@configure",
-            "@validate"
-        ],
-        "setup:force": [
-            "@install:force",
-            "@configure:reset",
-            "@configure",
-            "@validate"
-        ],
-        
-        "install-assets": [
-            "@php -r \"if (!file_exists('public/filament')) { mkdir('public/filament', 0755, true); }\"",
-            "@php -r \"copy('vendor/filament/filament/dist/filament.css', 'public/filament/filament.css');\"",
-            "@php -r \"copy('vendor/filament/filament/dist/filament.js', 'public/filament/filament.js');\""
-        ],
-        
-        "migrate": "php artisan db:migrate",
-        "migrate:fresh": "php artisan db:migrate --fresh",
-        "migrate:rollback": "php artisan db:migrate --rollback",
-        "migrate:status": "php artisan db:migrate --status",
-        "check": "php artisan db:migrate --check",
-        "seed": "php artisan db:seed",
-        
-        "optimize": [
-            "php artisan config:cache",
-            "php artisan route:cache",
-            "php artisan view:cache"
-        ],
-        "optimize:clear": [
-            "php artisan config:clear",
-            "php artisan route:clear",
-            "php artisan view:clear"
-        ],
-        
-        "dev": [
-            "@validate:quick",
-            "@optimize:clear",
-            "@install-assets"
-        ],
-        "build": [
-            "@validate",
-            "@install-assets",
-            "@optimize"
-        ],
-        "clean": [
-            "@php -r \"if (file_exists('bootstrap/cache/config.php')) unlink('bootstrap/cache/config.php');\"",
-            "@php -r \"if (file_exists('bootstrap/cache/routes.php')) unlink('bootstrap/cache/routes.php');\"",
-            "@php -r \"if (file_exists('bootstrap/cache/view.php')) unlink('bootstrap/cache/view.php');\"",
-            "@php -r \"array_map('unlink', glob('storage/framework/cache/*.php'));\"",
-            "@php -r \"array_map('unlink', glob('storage/framework/sessions/*.php'));\"",
-            "@php -r \"array_map('unlink', glob('storage/framework/views/*.php'));\""
-        ]
-    },
-    "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "pestphp/pest-plugin": true
-        }
-    },
-    "minimum-stability": "stable",
-    "prefer-stable": true,
-    "support": {
-        "issues": "https://github.com/webman-filament/extension/issues",
-        "wiki": "https://github.com/webman-filament/extension/wiki",
-        "source": "https://github.com/webman-filament/extension"
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "WebmanFilament\\WebmanFilamentServiceProvider"
-            ]
-        },
-        "webman": {
-            "plugin": {
-                "type": "application",
-                "description": "Filament 后台面板集成插件",
-                "version": "1.0.0"
-            }
-        }
+  "name": "webman-filament",
+  "description": "webman + Filament 集成扩展 - 基于适配器模式的常驻内存 Filament 后台面板",
+  "keywords": [
+    "webman",
+    "filament",
+    "admin",
+    "laravel",
+    "ui",
+    "sdui",
+    "bridge",
+    "adapter"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "yangweijie",
+      "email": "917647288@qq.com"
     }
+  ],
+  "require": {
+    "php": "^8.1",
+    "workerman/webman-framework": "^1.5",
+    "filament/filament": "^4.0",
+    "illuminate/support": "^11.0",
+    "illuminate/container": "^11.0",
+    "illuminate/http": "^11.0",
+    "illuminate/routing": "^11.0",
+    "illuminate/database": "^11.0",
+    "illuminate/filesystem": "^11.0",
+    "illuminate/console": "^11.0",
+    "illuminate/auth": "^11.0",
+    "livewire/livewire": "^3.4",
+    "alpinejs/alpine": "^3.13",
+    "tailwindcss/tailwindcss": "^3.4"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10.0",
+    "workerman/workerman": "^4.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "WebmanFilament\\": "src/",
+      "App\\": "src/",
+      "Database\\Migrations\\": "database/migrations/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "WebmanFilament\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit",
+    "test-coverage": "phpunit --coverage-html coverage",
+    "install": "php scripts/install.php",
+    "install:force": "php scripts/install.php --force",
+    "install:verbose": "php scripts/install.php --verbose",
+    "install:dry-run": "php scripts/install.php --dry-run",
+    "configure": "php scripts/configure.php",
+    "configure:interactive": "php scripts/configure.php --interactive",
+    "configure:database": "php scripts/configure.php --database",
+    "configure:admin": "php scripts/configure.php --admin",
+    "configure:theme": "php scripts/configure.php --theme",
+    "configure:reset": "php scripts/configure.php --reset",
+    "validate": "php scripts/validate.php",
+    "validate:verbose": "php scripts/validate.php --verbose",
+    "validate:quick": "php scripts/validate.php --quick",
+    "validate:health": "php scripts/validate.php --health",
+    "validate:report": "php scripts/validate.php --report",
+    "setup": [
+      "@install",
+      "@configure",
+      "@validate"
+    ],
+    "setup:force": [
+      "@install:force",
+      "@configure:reset",
+      "@configure",
+      "@validate"
+    ],
+    "install-assets": [
+      "@php -r \"if (!file_exists('public/filament')) { mkdir('public/filament', 0755, true); }\"",
+      "@php -r \"copy('vendor/filament/filament/dist/filament.css', 'public/filament/filament.css');\"",
+      "@php -r \"copy('vendor/filament/filament/dist/filament.js', 'public/filament/filament.js');\""
+    ],
+    "migrate": "php artisan db:migrate",
+    "migrate:fresh": "php artisan db:migrate --fresh",
+    "migrate:rollback": "php artisan db:migrate --rollback",
+    "migrate:status": "php artisan db:migrate --status",
+    "check": "php artisan db:migrate --check",
+    "seed": "php artisan db:seed",
+    "optimize": [
+      "php artisan config:cache",
+      "php artisan route:cache",
+      "php artisan view:cache"
+    ],
+    "optimize:clear": [
+      "php artisan config:clear",
+      "php artisan route:clear",
+      "php artisan view:clear"
+    ],
+    "dev": [
+      "@validate:quick",
+      "@optimize:clear",
+      "@install-assets"
+    ],
+    "build": [
+      "@validate",
+      "@install-assets",
+      "@optimize"
+    ],
+    "clean": [
+      "@php -r \"if (file_exists('bootstrap/cache/config.php')) unlink('bootstrap/cache/config.php');\"",
+      "@php -r \"if (file_exists('bootstrap/cache/routes.php')) unlink('bootstrap/cache/routes.php');\"",
+      "@php -r \"if (file_exists('bootstrap/cache/view.php')) unlink('bootstrap/cache/view.php');\"",
+      "@php -r \"array_map('unlink', glob('storage/framework/cache/*.php'));\"",
+      "@php -r \"array_map('unlink', glob('storage/framework/sessions/*.php'));\"",
+      "@php -r \"array_map('unlink', glob('storage/framework/views/*.php'));\""
+    ]
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true,
+  "support": {
+    "issues": "https://github.com/yangweijie/webman-filament/issues",
+    "wiki": "https://github.com/yangweijie/webman-filament/wiki",
+    "source": "https://github.com/yangweijie/webman-filament"
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "WebmanFilament\\WebmanFilamentServiceProvider"
+      ]
+    },
+    "webman": {
+      "plugin": {
+        "type": "application",
+        "description": "Filament 后台面板集成插件",
+        "version": "1.0.0"
+      }
+    }
+  }
 }
